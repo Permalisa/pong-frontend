@@ -1,9 +1,14 @@
-import { getVariableValue, setVariableValue } from "./select-menu.js"
+import { getVariableValue, setMenuOn, drawMenu, setBlockGameOff } from "./select-menu.js"
 
+//canvas
 const canvas = document.getElementById("canvas")
 const ctx = canvas.getContext("2d")
+//buttons
 const restart = document.getElementById("restart-block")
 const backToMenu = document.getElementById("back-to-menu")
+
+let timeOutId;
+let timeOutId2;
 
 function drawBackgroundLine() {
 	ctx.beginPath()
@@ -26,7 +31,6 @@ function startGame() {
 
 function restartGame() {
 	restart.style.display = "none"
-
 	startGame()
 	requestAnimationFrame(animate)
 }
@@ -137,6 +141,7 @@ let blockSpeed = 6
 let score = 0
 let scoreIncrement = 0
 let canScore = true
+
 let animationId = null
 
 function getRandomNumber(min, max) {
@@ -154,10 +159,11 @@ function randomNumberInterval(timeInterval) {
 }
 
 function generateBlocks() {
+	console.log("generate")
 	let timeDelay = randomNumberInterval(presetTime)
 	arrayBlocks.push(new Block(50, blockSpeed))
 
-	setTimeout(generateBlocks, timeDelay)
+	timeOutId = setTimeout(generateBlocks, timeDelay)
 }
 
 function blockCollision(player, block) {
@@ -213,10 +219,10 @@ function animate() {
 	drawScore()
 	player.draw()
 	increaseSpeed()
-
+	
 	arrayBlocks.forEach((arrayBlock, index) => {
 		arrayBlock.slide()
-
+		
 		//end game is player collides with a block
 		if (blockCollision(player, arrayBlock)) {
 			restart.style.display = "block"
@@ -251,8 +257,27 @@ restart.addEventListener("click", function (){
 	restartGame()
 })
 
+backToMenu.addEventListener("click", function () {
+	console.log("back-to-menu")
+	restart.style.display = "none"
+	backToMenu.style.display = "none"
+	cancelAnimationFrame(animationId)
+	animationId = null;
+	ctx.clearRect(0,0, canvas.width, canvas.height)
+	clearTimeout(timeOutId)
+	clearTimeout(timeOutId2)
+
+	
+	drawMenu()
+	setMenuOn()
+	setBlockGameOff()
+	console.log(arrayBlocks.length)
+})
+
 export function playBlock() {
-	console.log(getVariableValue())
+	backToMenu.style.display = "block"
+	startGame()
 	animate()
-	setTimeout(() => {generateBlocks()}, randomNumberInterval(presetTime))
+	console.log(arrayBlocks.length)
+	timeOutId2 = setTimeout(() => {generateBlocks()}, randomNumberInterval(presetTime))
 }

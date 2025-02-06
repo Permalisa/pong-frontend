@@ -11,8 +11,11 @@ export function getVariableValue () {
     return blockGameON
 }
 
-export function setVariableValue (value) {
-    blockGameON = value
+export function setBlockGameOff () {
+    blockGameON = false;
+}
+export function setMenuOn () {
+    menuOn = true
 }
 
 //CUBE IMG
@@ -63,7 +66,7 @@ function drawPong () {
     ctx.drawImage(pongImg, pongImgX, pongImgY, pongImg.width, pongImg.height)
 }
 
-function drawMenu() {
+export function drawMenu() {
     ctx.clearRect( 0,0, canvas.width, canvas.height)
     drawCube()
     drawPong()

@@ -58,12 +58,12 @@ body {
 
 
 #back-to-menu {
-	position: absolute;
+	position: relative;
 	color:#55a012;
 	font-size: 2rem;
-	left: 14%;
-	top: 10%;
-	display: fixed;
+	left: 3rem;
+	bottom: 16.5rem;
+	display: none;
 }
 
 #back-to-menu:hover {
