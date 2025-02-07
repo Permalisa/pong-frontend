@@ -1,11 +1,18 @@
-import { playBlock } from "./block-game.js"
+import { playBlock } from "../block-game/block-game.js"
+import { playPong } from "../pong-game/pong.js"
 
-const canvas = document.getElementById("canvas")
-const ctx = canvas.getContext("2d")
+export function getCanvasContent () {
+    const canvas = document.getElementById("canvas")
+    const ctx = canvas.getContext("2d")
+    const backToMenu = document.getElementById("back-to-menu")
+    return {ctx : ctx, canvas : canvas, backToMenu : backToMenu}
+}
+
+const canvas = getCanvasContent().canvas
+const ctx = getCanvasContent().ctx
 
 let menuOn = true
 let blockGameON = false
-
 
 export function getVariableValue () {
     return blockGameON
@@ -105,6 +112,7 @@ canvas.addEventListener('mousedown', (e) => {
     } else if (hoverPong) {
         menuOn = false
         ctx.clearRect( 0,0, canvas.width, canvas.height)
+        playPong()
     }
 
 })

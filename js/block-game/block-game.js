@@ -1,14 +1,25 @@
-import { getVariableValue, setMenuOn, drawMenu, setBlockGameOff } from "./select-menu.js"
+import { getCanvasContent, setMenuOn, drawMenu, setBlockGameOff } from "../menu/select-menu.js"
+import Player from "./player.js"
+import Block from "./block.js"
 
 //canvas
-const canvas = document.getElementById("canvas")
-const ctx = canvas.getContext("2d")
+const canvas = getCanvasContent().canvas
+const ctx = getCanvasContent().ctx
+
 //buttons
 const restart = document.getElementById("restart-block")
-const backToMenu = document.getElementById("back-to-menu")
+const backToMenu = getCanvasContent().backToMenu
 
 let timeOutId;
 let timeOutId2;
+let player = new Player(150, 350, 50, "#facf45")
+let arrayBlocks = []
+let presetTime = 1000 //block spawn timer in ms
+let blockSpeed = 6
+let score = 0
+let scoreIncrement = 0
+let canScore = true
+let animationId = null
 
 function drawBackgroundLine() {
 	ctx.beginPath()
@@ -17,6 +28,20 @@ function drawBackgroundLine() {
 	ctx.lineWidth = 2.9
 	ctx.strokeStyle = "white"
 	ctx.stroke()
+}
+
+function getRandomNumber(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+function randomNumberInterval(timeInterval) {
+	let returnTime = timeInterval
+	if (Math.random () < 0.5) {
+		returnTime += getRandomNumber(presetTime / 3, presetTime * 1.5)
+	} else {
+		returnTime -= getRandomNumber(presetTime / 5, presetTime / 2)
+	}
+	return returnTime
 }
 
 function startGame() {
@@ -35,131 +60,7 @@ function restartGame() {
 	requestAnimationFrame(animate)
 }
 
-class Player {
-	constructor (x, y, size, color) {
-		this.x = x
-		this.y = y
-		this.size = size
-		this.color = color
-
-		//jump configuration
-		this.jumpHeight = 12
-		this.shouldJump = false
-		this.jumpCounter = 0 //frame counter
-
-		//spin animation
-		this.spin = 0
-		this.spinIncrement = 90/32 //rotation of 90 degrees over 32 frames
-	}
-
-	rotation() {
-		let offsetXPosition = this.x + (this.size / 2) //store the position of
-		let offsetYPosition = this.y + (this.size / 2)// the player square
-		
-		//because the canvas rotation point is by default the top left corner (0,0)
-		//to get the rotation movement, need to move the canvas origin to the
-		//center point of the square to get a correct rotation animation
-		//need to move the canvas back to the original position after rotating 
-		//the square and before drawing onto the canvas
-
-		ctx.translate(offsetXPosition, offsetYPosition)
-
-		//Division to convert degrees into radiant
-		ctx.rotate(this.spin * Math.PI / 180)
-		ctx.rotate(this.spinIncrement * Math.PI / 180)
-		ctx.translate(-offsetXPosition, -offsetYPosition)
-
-		//4.5 because 90/20 (number of iteration in jump, frames)
-		this.spin += this.spinIncrement
-	}
-
-	counterRotation() {
-		//this rotate the cube back to its origin so it can be moved up properly
-		let offsetXPosition = this.x + (this.size / 2)
-		let offsetYPosition = this.y + (this.size / 2)
-		ctx.translate(offsetXPosition, offsetYPosition)
-		ctx.rotate(-this.spin * Math.PI / 180)
-		ctx.translate(-offsetXPosition, -offsetYPosition)
-	}
-
-	jump() {
-		if (this.shouldJump) {
-			this.jumpCounter++
-			if (this.jumpCounter < 15) {
-				this.y -= this.jumpHeight //go up
-			} else if (this.jumpCounter > 14 && this.jumpCounter < 19) {
-				this.y += 0
-			} else if (this.jumpCounter < 33 ) {
-				this.y += this.jumpHeight; //go down
-			}
-			this.rotation()
-			//end cycle
-			if (this.jumpCounter >= 32) {
-				this.counterRotation()
-				this.spin = 0
-				this.shouldJump = false
-			}
-		}
-	}
-
-	draw() {
-		this.jump()
-		ctx.fillStyle = this.color
-		ctx.fillRect(this.x, this.y, this.size, this.size)
-		
-		//reset the rotation so the rotation of the other elements is not changed
-		if (this.shouldJump) this.counterRotation()
-	}
-
-
-}
-
-class Block {
-	constructor (size, speed) {
-		this.x = canvas.width + size
-		this.y = 400 - size
-		this.size = size
-		this.color = "red"
-		this.slideSpeed = speed
-	}
-	
-	draw() {
-		ctx.fillStyle = this.color
-		ctx.fillRect(this.x, this.y, this.size, this.size)
-	}
-	
-	slide() {
-		this.draw()
-		this.x -= this.slideSpeed
-	}
-}
-
-let player = new Player(150, 350, 50, "#facf45")
-let arrayBlocks = []
-let presetTime = 1000 //block spawn timer in ms
-let blockSpeed = 6
-let score = 0
-let scoreIncrement = 0
-let canScore = true
-
-let animationId = null
-
-function getRandomNumber(min, max) {
-	return Math.floor(Math.random() * (max - min + 1)) + min
-}
-
-function randomNumberInterval(timeInterval) {
-	let returnTime = timeInterval
-	if (Math.random () < 0.5) {
-		returnTime += getRandomNumber(presetTime / 3, presetTime * 1.5)
-	} else {
-		returnTime -= getRandomNumber(presetTime / 5, presetTime / 2)
-	}
-	return returnTime
-}
-
 function generateBlocks() {
-	console.log("generate")
 	let timeDelay = randomNumberInterval(presetTime)
 	arrayBlocks.push(new Block(50, blockSpeed))
 
@@ -258,7 +159,6 @@ restart.addEventListener("click", function (){
 })
 
 backToMenu.addEventListener("click", function () {
-	console.log("back-to-menu")
 	restart.style.display = "none"
 	backToMenu.style.display = "none"
 	cancelAnimationFrame(animationId)
@@ -271,13 +171,11 @@ backToMenu.addEventListener("click", function () {
 	drawMenu()
 	setMenuOn()
 	setBlockGameOff()
-	console.log(arrayBlocks.length)
 })
 
 export function playBlock() {
 	backToMenu.style.display = "block"
 	startGame()
-	animate()
-	console.log(arrayBlocks.length)
+	animate() 
 	timeOutId2 = setTimeout(() => {generateBlocks()}, randomNumberInterval(presetTime))
 }
