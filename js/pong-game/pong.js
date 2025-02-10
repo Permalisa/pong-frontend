@@ -1,26 +1,27 @@
 import Ball from "./ball.js"
 import Paddle from "./paddle.js"
-import { getCanvasContent, setMenuOn, drawMenu} from "../menu/select-menu.js"
+import { getCanvasContent, setMenu, drawMenu, getPongGameValue, setPongGameOff} from "../menu/select-menu.js"
 
 const canvas = getCanvasContent().canvas
 const ctx = getCanvasContent().ctx
 const backToMenu = getCanvasContent().backToMenu
 
-const ball = new Ball()
-const paddle1 = new Paddle(1)
-const paddle2 = new Paddle(2)
+let ball = new Ball()
+let paddle1 = new Paddle(1)
+let paddle2 = new Paddle(2)
 
 let lastTime, score1, score2
-// let score1 = 0  
-// let score2 = 0
-
-let opponent = true
+let opponent = false
 let animationId = null
 
 function start() {
     score1 = 0  
     score2 = 0
     reset()
+    ball.draw()
+    paddle1.draw()
+    paddle2.draw()
+    drawScore()
 }
 
 function reset () {
@@ -67,23 +68,39 @@ function drawScore() {
     ctx.textAlign = "center"
     ctx.fillText(score1, canvas.width / 4, 50)
     ctx.fillText(score2, canvas.width * 3 / 4, 50)
-
 }
 
 backToMenu.addEventListener("click", function () {
-    backToMenu.style.display = "none"
-    cancelAnimationFrame(animationId)
-    animationId = null;
-    ctx.clearRect(0,0, canvas.width, canvas.height)
-    
-    setMenuOn()
-    drawMenu()
+    if (getPongGameValue()){
+
+        backToMenu.style.display = "none"
+        cancelAnimationFrame(animationId)
+        animationId = null;
+        ctx.clearRect(0,0, canvas.width, canvas.height)
+
+        console.log("pong")
+        console.log(getPongGameValue())
+
+        setPongGameOff()
+        setMenu(true)
+        drawMenu()
+    }
 })
+
+// //Event
+// addEventListener("keydown", e => {
+// 	if (e.code == "Space" || e.key == "32" || e.key == " " ) {
+//         if(animationId == null && getPongGameValue()) {
+//         }
+// 	}
+// })
 
 export function playPong() {
     backToMenu.style.display = "block"
+    setMenu(false)
     start()
-    update()
+    animationId = requestAnimationFrame(update)
+    
 }
 
 //update()

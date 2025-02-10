@@ -1,4 +1,4 @@
-import { getCanvasContent, setMenuOn, drawMenu, setBlockGameOff } from "../menu/select-menu.js"
+import { getCanvasContent, setMenu, drawMenu, setBlockGameOff, getBlockGameValue } from "../menu/select-menu.js"
 import Player from "./player.js"
 import Block from "./block.js"
 
@@ -159,22 +159,25 @@ restart.addEventListener("click", function (){
 })
 
 backToMenu.addEventListener("click", function () {
-	restart.style.display = "none"
-	backToMenu.style.display = "none"
-	cancelAnimationFrame(animationId)
-	animationId = null;
-	ctx.clearRect(0,0, canvas.width, canvas.height)
-	clearTimeout(timeOutId)
-	clearTimeout(timeOutId2)
+	if (getBlockGameValue()) {
 
-	
-	drawMenu()
-	setMenuOn()
-	setBlockGameOff()
+		restart.style.display = "none"
+		backToMenu.style.display = "none"
+		cancelAnimationFrame(animationId)
+		animationId = null;
+		ctx.clearRect(0,0, canvas.width, canvas.height)
+		clearTimeout(timeOutId)
+		clearTimeout(timeOutId2)
+		
+		setBlockGameOff()
+		setMenu(true)
+		drawMenu()
+	}
 })
 
 export function playBlock() {
 	backToMenu.style.display = "block"
+	setMenu(false)
 	startGame()
 	animate() 
 	timeOutId2 = setTimeout(() => {generateBlocks()}, randomNumberInterval(presetTime))

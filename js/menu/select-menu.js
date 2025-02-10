@@ -1,5 +1,5 @@
 import { playBlock } from "../block-game/block-game.js"
-import { playPong } from "../pong-game/pong.js"
+import { playPong } from "../pong-game/pong-game.js"
 
 export function getCanvasContent () {
     const canvas = document.getElementById("canvas")
@@ -13,16 +13,39 @@ const ctx = getCanvasContent().ctx
 
 let menuOn = true
 let blockGameON = false
+let pongGameON = false
+let pongGameMenu = false
 
-export function getVariableValue () {
+export function getBlockGameValue () {
     return blockGameON
+}
+
+export function getPongGameValue () {
+    return pongGameON
 }
 
 export function setBlockGameOff () {
     blockGameON = false;
 }
-export function setMenuOn () {
-    menuOn = true
+
+export function setPongGameOff () {
+    pongGameON = false;
+}
+
+export function setPongGameOn() {
+    pongGameON = true;
+}
+
+export function getPongMenuValue() {
+    return pongGameMenu
+}
+
+export function setPongGameMenu () {
+    pongGameMenu = false;
+}
+
+export function setMenu (param) {
+    menuOn = param
 }
 
 //CUBE IMG
@@ -104,14 +127,15 @@ canvas.addEventListener('mousedown', (e) => {
     hoverCube = isMouseOverImg(mouseX, mouseY, cubeImgX, cubeImgY, cubeImg.width, cubeImg.height)
     hoverPong = isMouseOverImg(mouseX, mouseY, pongImgX, pongImgY, pongImg.width, pongImg.height)
 
-    if (hoverCube){
+    if (hoverCube && menuOn){
         menuOn = false
         ctx.clearRect( 0,0, canvas.width, canvas.height)
         blockGameON = true
         playBlock()
-    } else if (hoverPong) {
+    } else if (hoverPong && menuOn) {
         menuOn = false
         ctx.clearRect( 0,0, canvas.width, canvas.height)
+        pongGameMenu = true
         playPong()
     }
 

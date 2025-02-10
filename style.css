@@ -63,7 +63,7 @@ body {
 
 #back-to-menu {
 	position: relative;
-	color:#55a012;
+	color: #facf45;
 	font-size: 2rem;
 	left: 3rem;
 	bottom: 16.5rem;
@@ -73,7 +73,7 @@ body {
 #back-to-menu:hover {
 	display: block;
 	border-radius: 1rem;
-	background-color: aliceblue;
+	background-color: rgb(2, 2, 36);
 }
 
 .pong-mode  {
