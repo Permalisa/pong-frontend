@@ -1,0 +1,19 @@
+/* Ensure the background animation container fills the entire screen */
+#bganimation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Ensures the background doesn't interfere with user interaction */
+    z-index: -1; /* Ensures the background stays behind other content */
+    background-color: coral;
+  
+  /* Style for the faces (images) */
+  .face {
+    position: absolute;
+    width: 200px; /* Adjust size of faces */
+    height: 200px;
+    object-fit: contain;
+  }
+}
